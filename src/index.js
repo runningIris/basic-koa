@@ -1,18 +1,27 @@
-const Koa = require("./koa");
-const PORT = 3000;
+const Koa = require('./koa')
+const Router = require('./router')
+const static = require('./static')
+const iptable = require('./iptable')
 
-const app = new Koa();
+const PORT = 3000
 
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+const router = new Router()
 
-app.use(async (ctx, next) => {
-  console.log(1);
-  await next();
-  console.log(4);
-});
+router.get('/', async (ctx) => {
+  console.log('index')
+  ctx.body = 'index page'
+})
+router.get('/post', async (ctx) => {
+  ctx.body = 'post page'
+})
+router.get('/list', async (ctx) => {
+  ctx.body = 'list page'
+})
 
-app.use(async (ctx, next) => {
-  console.log(2);
-  await next();
-  console.log(3);
-});
+const app = new Koa()
+
+app.listen(PORT, () => console.log(`Server running on ${PORT}`))
+
+app.use(iptable)
+app.use(router.routes())
+app.use(static(__dirname + '/public'))
